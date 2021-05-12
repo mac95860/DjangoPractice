@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
+from django.template import loader
 from .models import Question
+
 
 # Create your views here.
 def index(request):
@@ -20,6 +22,11 @@ def index(request):
     # the - next to pub date, is going to return the list in reverse order 
     # so that the most recent post is on top
     latest_question_list = Question.objects.order_by('-pub_date')[:5]
-    output = ', '.join([q.question_text for q in latest_question_list])
-    return HttpResponse(output)
-    
+    context = {
+        'latest_question_list': latest_question_list,
+    }
+    return render(request, 'polls/index.html', context)
+
+def detail(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    return render(request, 'polls/detail.html', {'question': question})
